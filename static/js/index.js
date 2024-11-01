@@ -254,3 +254,52 @@ document.getElementById('clearDataBtn').addEventListener('click', function () {
         location.reload(); // Reload the page after clearing the data
     }
 });
+// Calculate and display statistics
+function updateStatistics() {
+    const borrowingData = JSON.parse(localStorage.getItem('borrowingData')) || {};
+    
+    // Total books
+    const totalBooks = document.querySelectorAll('#book-table tr').length;
+    document.getElementById('totalBooks').textContent = totalBooks;
+    
+    // Currently borrowed books
+    const borrowedBooks = Object.keys(borrowingData).length;
+    document.getElementById('borrowedBooks').textContent = borrowedBooks;
+    
+    // Most popular genre
+    const genreCounts = {};
+    document.querySelectorAll('#book-table tr').forEach(row => {
+        const genre = row.cells[4].textContent;
+        genreCounts[genre] = (genreCounts[genre] || 0) + 1;
+    });
+    
+    const popularGenre = Object.entries(genreCounts)
+        .sort(([,a], [,b]) => b - a)[0];
+    document.getElementById('popularGenre').textContent = 
+        popularGenre ? `${popularGenre[0]} (${popularGenre[1]})` : '-';
+    
+    // Active borrowers
+    const uniqueBorrowers = new Set(
+        Object.values(borrowingData).map(data => data.borrowerName)
+    );
+    document.getElementById('activeBorrowers').textContent = uniqueBorrowers.size;
+}
+
+// Update statistics when page loads and after any borrowing action
+window.addEventListener('load', updateStatistics);
+
+// Add updateStatistics() call to borrow and return handlers
+document.getElementById('borrowForm').addEventListener('submit', function(event) {
+    // ... existing borrow code ...
+    updateStatistics();
+});
+
+document.getElementById('returnForm').addEventListener('submit', function(event) {
+    // ... existing return code ...
+    updateStatistics();
+});
+
+document.getElementById('clearDataBtn').addEventListener('click', function() {
+    // ... existing clear code ...
+    updateStatistics();
+});

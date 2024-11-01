@@ -121,3 +121,11 @@ def get_description():
 
 if __name__ == '__main__':
     app.run(debug=True)
+# Add to app.py after config loading
+if not GEMINI_API_KEY or not GEMINI_API_URL:
+    logging.warning("""
+        Gemini API configuration is missing. Please ensure config.ini exists and contains:
+        [API]
+        GEMINI_API_KEY=your_api_key
+        GEMINI_API_URL=https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent
+    """)
